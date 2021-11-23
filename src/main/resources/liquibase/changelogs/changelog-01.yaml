@@ -1,0 +1,45 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: Daniil Shreyder
+      changes:
+        - createTable:
+            tableName: users
+            remarks: Users information
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: users_pk
+                    nullable: false
+              - column:
+                  name: username
+                  type: varchar(32)
+                  remarks: Unique username
+                  constraints:
+                    unique: true
+                    uniqueConstraintName: user_username_uq
+                    nullable: false
+              - column:
+                  name: first_name
+                  type: varchar(32)
+              - column:
+                  name: last_name
+                  type: varchar(32)
+                  remarks: User lastname
+              - column:
+                  name: email
+                  type: varchar(32)
+                  remarks: User email
+              - column:
+                  name: phone
+                  type: varchar(16)
+                  remarks: User phone number
+      rollback:
+        - dropTable:
+            tableName: users
+
+
