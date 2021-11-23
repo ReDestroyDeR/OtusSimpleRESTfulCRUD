@@ -1,5 +1,11 @@
 spring:
-  datasource:
-    url: jdbc:postgres://${DATASOURCE_POSTGRES_HOST}:${DATASOURCE_POSTGRES_PORT}/${DATASOURCE_POSTGRES_DATABASE}
+  r2dbc:
+    url: r2dbc:postgresql://${DATASOURCE_POSTGRES_HOST}:${DATASOURCE_POSTGRES_PORT}/${DATASOURCE_POSTGRES_DATABASE}
     username: ${DATASOURCE_POSTGRES_USERNAME}
     password: ${DATASOURCE_POSTGRES_PASSWORD}
+  liquibase:
+    url: jdbc:postgresql://${DATASOURCE_POSTGRES_HOST}:${DATASOURCE_POSTGRES_PORT}/${DATASOURCE_POSTGRES_DATABASE}
+    user: ${DATASOURCE_POSTGRES_USERNAME}
+    password: ${DATASOURCE_POSTGRES_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+    change-log: classpath:/liquibase/changelog-master.yaml
