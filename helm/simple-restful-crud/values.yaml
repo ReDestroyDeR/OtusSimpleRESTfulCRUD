@@ -1,0 +1,85 @@
+# Values for Simple Restful Crud Application
+# redestroyder<daniil.schroder@gmail.com>
+
+replicaCount: 1
+
+namespace: "otus"
+
+image:
+  repository: redestroyder/simple_restful_crud
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: [ ]
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  annotations: { }
+  name: "simple-restful-crud-service-account"
+
+podAnnotations: { }
+
+# Pod Security is minorly configured on docker-image level
+podSecurityContext: { }
+# fsGroup: 2000
+
+securityContext: { }
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+# runAsUser: 1000
+
+service:
+  type: ClusterIP
+  port: 8080
+
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations: {
+    nginx.ingress.kubernetes.io/rewrite.target: /
+  }
+  hosts:
+    - host: arch.homework
+      paths:
+        - path: /
+          pathType: Prefix
+
+resources: { }
+
+postgresql:
+  fullnameOverride: "otus-postgresql"
+  service:
+    port: 5432
+
+  postgresqlUsername: postgres
+  postgresqlPassword: postgres
+  initdbScripts:
+    init.sql: |
+      CREATE USER otus WITH ENCRYPTED PASSWORD 'otus';
+      CREATE DATABASE arch_homework;
+      GRANT ALL PRIVILEGES ON DATABASE arch_homework TO otus;
+
+secrets:
+  # Host and port are from overrides that are defined above
+  datasource_postgres_host: "otus-postgresql"
+  datasource_postgres_port: "5432"
+  datasource_postgres_database: "arch_homework"
+  datasource_postgres_username: "otus"
+  datasource_postgres_password: "otus"
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+nodeSelector: { }
+
+tolerations: [ ]
+
+affinity: { }
