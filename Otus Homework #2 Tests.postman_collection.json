@@ -1,0 +1,207 @@
+{
+  "info": {
+    "_postman_id": "9dfa8475-5e65-4ef9-9421-7965aafc3349",
+    "name": "Otus Homework #2 Tests",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Create User",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Create user\", function() {\r",
+              "    pm.expect(pm.response.code).to.eq(200)\r",
+              "    pm.expect(pm.response.text()).to.include(\"id\")\r",
+              "    pm.collectionVariables.set(\"test_user_id\", pm.response.json().id)\r",
+              "})"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"username\": \"Test User\",\r\n    \"firstName\": \"Test User Firstname\",\r\n    \"lastName\": \"Test User Lastname\",\r\n    \"email\": \"example@example.com\",\r\n    \"phone\": \"phoneNumber\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{host}}/user",
+          "host": [
+            "{{host}}"
+          ],
+          "path": [
+            "user"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get User",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Get user and compare with persisted variant\", function() {\r",
+              "    pm.expect(pm.response.code).to.eq(200)\r",
+              "    var test_user = JSON.parse(pm.collectionVariables.get(\"test_user\"))\r",
+              "    test_user.id = pm.collectionVariables.get(\"test_user_id\")\r",
+              "    pm.expect(pm.response.json()).to.deep.eq(test_user)\r",
+              "})"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{host}}/user/{{test_user_id}}",
+          "host": [
+            "{{host}}"
+          ],
+          "path": [
+            "user",
+            "{{test_user_id}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Update User",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"User Update test\", function() {\r",
+              "    pm.expect(pm.response.code).to.eq(200)\r",
+              "    var host = pm.collectionVariables.get('host')\r",
+              "    var id = pm.collectionVariables.get('test_user_id')\r",
+              "    var url = host + \"/user/\" + id\r",
+              "    pm.sendRequest(url, function(err, res) {\r",
+              "        pm.expect(err).to.equal(null)\r",
+              "        pm.expect(res).to.have.property(\"code\", 200)\r",
+              "        var modified_test_user = JSON.parse(pm.collectionVariables.get(\"test_user\"))\r",
+              "        modified_test_user.id = pm.collectionVariables.get(\"test_user_id\")\r",
+              "        modified_test_user.username = \"New Test User\"\r",
+              "        modified_test_user.firstName = \"It's new\"\r",
+              "        pm.expect(res.json()).to.deep.eq(modified_test_user)\r",
+              "    })\r",
+              "})"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"username\": \"New Test User\",\r\n    \"firstName\": \"It's new\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{host}}/user/{{test_user_id}}",
+          "host": [
+            "{{host}}"
+          ],
+          "path": [
+            "user",
+            "{{test_user_id}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Delete User",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Delete User response\", function() {\r",
+              "    pm.expect(pm.response.code).to.eq(204)\r",
+              "    var host = pm.collectionVariables.get('host')\r",
+              "    var id = pm.collectionVariables.get('test_user_id')\r",
+              "    var url = host + \"/user/\" + id\r",
+              "    pm.sendRequest(url, function(err, res) {\r",
+              "        pm.expect(res.code).to.eq(404)\r",
+              "    })\r",
+              "})"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{host}}/user/{{test_user_id}}",
+          "host": [
+            "{{host}}"
+          ],
+          "path": [
+            "user",
+            "{{test_user_id}}"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "test_user",
+      "value": "{\n    \"username\": \"Test User\",\n    \"firstName\": \"Test User Firstname\",\n    \"lastName\": \"Test User Lastname\",\n    \"email\": \"example@example.com\",\n    \"phone\": \"phoneNumber\"\n}\n"
+    },
+    {
+      "key": "test_user_id",
+      "value": 1
+    },
+    {
+      "key": "host",
+      "value": "arch.homework"
+    }
+  ]
+}
