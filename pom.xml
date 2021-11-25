@@ -10,7 +10,7 @@
     </parent>
     <groupId>ru.red</groupId>
     <artifactId>OtusSimpleRESTfulCRUD</artifactId>
-    <version>0.0.1-ALPHA</version>
+    <version>0.0.1-BETA</version>
     <name>OtusSimpleRESTfulCRUD</name>
     <description>OtusSimpleRESTfulCRUD</description>
     <properties>
