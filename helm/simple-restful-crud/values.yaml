@@ -1,7 +1,7 @@
 # Values for Simple Restful Crud Application
 # redestroyder<daniil.schroder@gmail.com>
 
-replicaCount: 1
+replicaCount: 3
 
 namespace: "otus"
 
@@ -36,11 +36,37 @@ service:
   type: ClusterIP
   port: 8080
 
+#metallb:
+#  configInline:
+#    address-pools:
+#      - name: default
+#        protocol: layer2
+#        addresses:
+#          - 200.0.0.0-200.0.100.0
+
+ingress-nginx:
+  controller:
+    containerPort:
+      prometheus: 9113
+
+    service:
+      type: LoadBalancer
+      externalTrafficPolicy: Local
+
+    metrics:
+      enabled: true
+
+      serviceMonitor:
+        enabled: true
+        additionalLabels: {
+          simple-restful-crud: monitoring
+        }
+
 ingress:
   enabled: true
   className: "nginx"
   annotations: {
-    nginx.ingress.kubernetes.io/rewrite.target: /
+    nginx.ingress.kubernetes.io/rewrite.target: /,
   }
   hosts:
     - host: arch.homework
@@ -50,17 +76,118 @@ ingress:
 
 resources: { }
 
+serviceMonitor:
+  labels: {
+    simple-restful-crud: monitoring
+  }
+
+kube-prometheus-stack:
+  commonLabels: {
+    simple-restful-crud: monitoring # This is dumb, but simple
+  }
+
+  grafana:
+    adminUser: admin
+    adminPassword: admin
+
+    ingress:
+      enabled: true
+      hosts:
+        - "grafana.arch.homework"
+      ingressClassName: nginx
+
+  prometheus:
+    ingress:
+      enabled: true
+      ingressClassName: nginx
+      hosts:
+        - "prometheus.arch.homework"
+
+    prometheusSpec:
+      serviceMonitorSelector: {
+        matchLabels: {
+          simple-restful-crud: monitoring
+        }
+      }
+
+  # Mitigation of transition to secure port | Doesn't work
+#  kubeControllerManager:
+#    service:
+#      port: 10257
+#      targetPort: 10257
+#
+#    serviceMonitor:
+#      insecureSkipVerify: true # INSECURE!
+#
+#  kubeProxy:
+#    service:
+#      port: 10257
+#      targetPort: 10257
+#
+#    serviceMonitor:
+#      https: true # May not work
+#
+#  kubeScheduler:
+#    service:
+#      port: 10257
+#      targetPort: 10257
+#
+#    serviceMonitor:
+#      insecureSkipVerify: true # INSECURE!
+
 postgresql:
+  # Permission fix for NFS systems based on Rancher local filesystem
+  #  readReplicas:
+  #    extraInitContainers:
+  #      - name: init-perms
+  #        image: ubuntu
+  #        command: [ "/bin/sh" ]
+  #        args:
+  #          - -c
+  #          - >-
+  #            chown -R 1001:1001 /bitnami/postgresql
+  #        volumeMounts:
+  #          - name: data
+  #            mountPath: /bitnami/postgresql
+  #            subPath:
+  #  primary:
+  #    extraInitContainers:
+  #      - name: init-perms
+  #        image: ubuntu
+  #        command: [ "/bin/sh" ]
+  #        args:
+  #          - -c
+  #          - >-
+  #            chown -R 1001:1001 /bitnami/postgresql
+  #        volumeMounts:
+  #          - name: data
+  #            mountPath: /bitnami/postgresql
+  #            subPath:
+
   fullnameOverride: "otus-postgresql"
   service:
     port: 5432
+
+  postgresqlDatabase: arch_homework
+
+  persistence:
+    size: 4Gi
+    accessModes:
+      - ReadWriteOnce
+
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true
+      additionalLabels: {
+        simple-restful-crud: monitoring
+      }
 
   postgresqlUsername: postgres
   postgresqlPassword: postgres
   initdbScripts:
     init.sql: |
       CREATE USER otus WITH ENCRYPTED PASSWORD 'otus';
-      CREATE DATABASE arch_homework;
       GRANT ALL PRIVILEGES ON DATABASE arch_homework TO otus;
 
 secrets:

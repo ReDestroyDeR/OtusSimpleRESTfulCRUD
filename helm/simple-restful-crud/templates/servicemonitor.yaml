@@ -1,0 +1,15 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "simple-restful-crud.fullname" . }}
+  labels:
+  {{- include "simple-restful-crud.labels" . | nindent 4 }}
+  {{ toYaml .Values.serviceMonitor.labels | nindent 4 }}
+
+spec:
+  selector:
+    matchLabels:
+    {{- include "simple-restful-crud.labels" . | nindent 6 }}
+  endpoints:
+    - port: http
+      path: "/actuator/prometheus"

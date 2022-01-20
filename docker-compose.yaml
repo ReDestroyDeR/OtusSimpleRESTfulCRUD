@@ -3,7 +3,7 @@ version: "3.7"
 services:
   web:
     build: .
-    image: redestroyder/simple_restful_crud:0.0.1-ALPHA
+    # image: redestroyder/simple_restful_crud:0.0.2-ALPHA
     environment:
       - DATASOURCE_POSTGRES_HOST=db
       - DATASOURCE_POSTGRES_PORT=5432
@@ -38,7 +38,7 @@ volumes:
 networks:
   backend:
     driver: bridge
-    attachable: false
+    attachable: true
     ipam:
       config:
         - subnet: 100.10.0.0/16

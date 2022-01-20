@@ -1,4 +1,4 @@
-#bin/bash
+#!/bin/bash
 PROJECT_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
 mvn clean package
 mkdir -p ./target/dependency

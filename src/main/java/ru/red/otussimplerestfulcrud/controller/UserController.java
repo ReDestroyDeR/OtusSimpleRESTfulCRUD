@@ -73,6 +73,7 @@ public class UserController {
                 .flatMap(src -> userRepository.save(User.merge(src, user)))
                 .mapNotNull(updatedUser -> ResponseEntity.ok("Updated"))
                 .onErrorMap(error -> new BadRequest(error.getMessage()))
+                .switchIfEmpty(Mono.error(new NotFound("Not found")))
                 .doOnSuccess(response -> log.info("Successfully updated user with id {}", id))
                 .doOnError(error -> log.info("Failed updated user: {}", error.getMessage()));
     }

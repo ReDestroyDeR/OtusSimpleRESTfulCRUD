@@ -9,3 +9,26 @@ spring:
     password: ${DATASOURCE_POSTGRES_PASSWORD}
     driver-class-name: org.postgresql.Driver
     change-log: classpath:/liquibase/changelog-master.yaml
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: info, health, prometheus
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+
+    enable:
+      jvm: false
+    distribution:
+      percentiles-histogram:
+        http:
+          server:
+            requests: true
+      percentiles:
+        # Not quite sure will this work since we're working in yaml and env properties should be something like
+        # - 100\n- 99\n- 95 etc.
+        ${METRICS_PERCENTILES}
+

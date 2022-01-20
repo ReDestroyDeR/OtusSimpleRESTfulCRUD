@@ -9,3 +9,23 @@ spring:
     password: postgres
     driver-class-name: org.postgresql.Driver
     change-log: classpath:/liquibase/changelog-master.yaml
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: info, health, prometheus
+  metrics:
+    enable:
+      jvm: false
+    distribution:
+      percentiles-histogram:
+        http:
+          server:
+            requests: true
+      percentiles:
+        - 100
+        - 99
+        - 95
+        - 50
+
