@@ -24,11 +24,8 @@ inside the `docker-compose.yaml` file
 
 0. Install [helm](https://helm.sh/)
 1. Write `helm install simple-restful-crud helm/simple-restful-crud/ --values helm/simple-restful-crud/values.yaml` in
-   the terminal. After installation process you can access the service via `arch.homework` URL. Only problem is that
-   there is no Ingress-DNS configured so if you don't have, for example `/etc/hosts` mapping `Minikube IP`
-   to that URL you won't be able to access it that way.
-   <br>To add IP to `/etc/hosts` you can use provided script `./add-minikube-ip-to-hosts.sh`
-   <br><br>P.S. There won't be a Windows solution (sry)
+   the terminal. After installation process you can access services via `arch.homework` `grafana.arch.homework` and `prometheus.arch.homework` URLs. You have to have route to your Kubernetes cluster.
+
 2. (Optional) You can pass `--namespace [namespace]` option to the `helm install` if you want to deploy in specific
    namespace
 3. Uninstall: `helm uninstall simple-restful-crud`
